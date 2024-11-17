@@ -1,0 +1,12 @@
+env/
+Lib/
+Scripts/
+pyvenv.cfg
+__pycache__/
+.idea/
+constants/kite_credentials.py
+*.csv
+!EQUITY_NSE.csv
+!EQUITY_BSE.csv
+!INDEX_NSE.csv
+stock_action.log
