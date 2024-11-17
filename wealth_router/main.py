@@ -104,9 +104,9 @@ async def start_process():
     def single_process(service_name, arg_list: list):
         try:
             args = ":".join(arg_list)
-            subprocess.Popen(["sudo", "systemctl", "enable", f"{service_name}@{args}"], check=True)
+            subprocess.Popen(["sudo", "systemctl", "enable", f"{service_name}@{args}"])
             sleep(5)
-            subprocess.Popen(["sudo", "systemctl", "start", f"{service_name}@{args}"], check=True)
+            subprocess.Popen(["sudo", "systemctl", "start", f"{service_name}@{args}"])
             message = f"{service_name} started successfully."
         except subprocess.CalledProcessError as e:
             message = f"Failed to restart {service_name}: {e}"

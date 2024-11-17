@@ -18,6 +18,9 @@ set_access_token(access_token=access_token)
 
 
 async def load_financials():
+
+    logger.info("TASK STARTED")
+
     obtained_stock_list = await get_correct_symbol(lower_price=STOCK_LOWER_PRICE, higher_price=STOCK_UPPER_PRICE)
     obtained_stock_list = [st for st in obtained_stock_list if '-BE' not in st]
     logger.info(obtained_stock_list)
@@ -25,6 +28,8 @@ async def load_financials():
     logger.info(price_df)
 
     await get_financial_df(obtained_stock_list, 7)
+
+    logger.info("TASK ENDED")
 
 
 if __name__ == "__main__":

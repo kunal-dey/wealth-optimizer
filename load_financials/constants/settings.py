@@ -15,4 +15,4 @@ MIS_STOCK_LIST = "https://docs.google.com/spreadsheets/d/1fLTsNpFJPK349RTjs0GRSX
 TRAINING_DATE = datetime(2024, 9, 23) if DEBUG else datetime.now()
 
 STOCK_LOWER_PRICE = os.environ.get("STOCK_LOWER_PRICE", 0)
-STOCK_UPPER_PRICE = os.environ.get("STOCK_UPPER_PRICE", 30)
+STOCK_UPPER_PRICE = os.environ.get("STOCK_UPPER_PRICE", 3000000000)
