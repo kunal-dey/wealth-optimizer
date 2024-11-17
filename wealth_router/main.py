@@ -5,6 +5,7 @@ import subprocess
 from kiteconnect.exceptions import InputException
 from quart import Quart, request, Blueprint
 from quart_cors import cors
+from time import sleep
 
 from constants.global_contexts import set_access_token, kite_context
 
@@ -20,6 +21,8 @@ app.config["PROPAGATE_EXCEPTIONS"] = True
 app = cors(app, allow_origin="*")
 
 logger: Logger = get_logger(__name__)
+
+token_list = []
 
 
 async def get_allocated_funds():
@@ -90,20 +93,6 @@ async def set_token_request():
         return {"message": "there is an error"}
 
 
-@app.get("/hold")
-async def hold():
-    global logger
-
-    try:
-        # to test whether the access toke has been set after login
-        _ = kite_context.ltp("NSE:INFY")
-
-        return {"message": await get_allocated_funds()}
-    except InputException:
-        return {"message": "Kindly login first"}
-
-
-
 @app.get("/start")
 async def start_process():
     """
@@ -115,8 +104,10 @@ async def start_process():
     def single_process(service_name, arg_list: list):
         try:
             args = ":".join(arg_list)
-            subprocess.Popen(["sudo", "systemctl", "restart", f"{service_name}@{args}"], check=True)
-            message = f"{service_name} restarted successfully."
+            subprocess.Popen(["sudo", "systemctl", "enable", f"{service_name}@{args}"], check=True)
+            sleep(5)
+            subprocess.Popen(["sudo", "systemctl", "start", f"{service_name}@{args}"], check=True)
+            message = f"{service_name} started successfully."
         except subprocess.CalledProcessError as e:
             message = f"Failed to restart {service_name}: {e}"
         logger.info(message)
@@ -134,7 +125,7 @@ async def start_process():
                 # docker container which is running the training operation
                 service_message = "To be added"
             case "load-financials":
-                service_message = single_process(service_name="financials", arg_list=[kite_context.access_token])
+                service_message = single_process(service_name="load_financials", arg_list=[kite_context.access_token])
             case "penny":
                 arg_list = [kite_context.access_token, allocated_funds["penny"], "runner"] # access_token, wallet, mode(training or runner)
                 service_message = single_process(service_name="penny", arg_list=arg_list)
@@ -142,56 +133,59 @@ async def start_process():
                 arg_list = [kite_context.access_token, allocated_funds["index"], "runner"]
                 service_message = single_process(service_name="index", arg_list=arg_list)
             case "generic":
-                arg_list = [kite_context.access_token, allocated_funds["generic"], "runner"]
-                service_message = single_process(service_name="generic", arg_list=arg_list)
+                # arg_list = [kite_context.access_token, allocated_funds["generic"], "runner"]
+                # service_message = single_process(service_name="generic", arg_list=arg_list)
+                service_message = "To be added"
             case "all":
                 service_message = ""
                 arg_list = [kite_context.access_token, allocated_funds["penny"], "runner"]
                 service_message += "\n" + single_process(service_name="penny", arg_list=arg_list)
                 arg_list = [kite_context.access_token, allocated_funds["index"], "runner"]
                 service_message += "\n" + single_process(service_name="index", arg_list=arg_list)
-                arg_list = [kite_context.access_token, allocated_funds["generic"], "runner"]
-                service_message += "\n" + single_process(service_name="generic", arg_list=arg_list)
+                # arg_list = [kite_context.access_token, allocated_funds["generic"], "runner"]
+                # service_message += "\n" + single_process(service_name="generic", arg_list=arg_list)
+        token_list.append(kite_context.access_token)
         return {"message": service_message}
     except InputException:
         return {"message": "Kindly login first"}
 
 
-@app.route("/stop")
-async def stop_background_tasks():
-    """
-        On being deployed if we need to manually stop any specific container we can do using this route
-    """
-    global logger
-
-    def single_process(service_name):
-        try:
-            subprocess.Popen(["sudo", "systemctl", "stop", service_name], check=True)
-            message = f"{service_name} stopped successfully."
-        except subprocess.CalledProcessError as e:
-            message = f"Failed to stop {service_name}: {e}"
-        logger.info(message)
-        return message
-
-    service_message = None
-    match request.args["task"]:
-        case "training":
-            # docker container which is running the training operation
-            service_message = "To be added"
-        case "load-financials":
-            service_message = single_process(service_name="financials")
-        case "penny":
-            service_message = single_process(service_name="penny")
-        case "index":
-            service_message = single_process(service_name="index")
-        case "generic":
-            service_message = single_process(service_name="generic")
-        case "all":
-            service_message = ""
-            service_message += "\n" + single_process(service_name="penny")
-            service_message += "\n" + single_process(service_name="index")
-            service_message += "\n" + single_process(service_name="generic")
-    return {"message": service_message}
+# @app.route("/stop")
+# async def stop_background_tasks():
+#     """
+#         On being deployed if we need to manually stop any specific container we can do using this route
+#     """
+#     global logger
+#
+#     def single_process(service_name):
+#         try:
+#             subprocess.Popen(["sudo", "rm", "-rf", "/etc/systemd/system/load_financials@.service"], check=True)
+#             message = f"{service_name} stopped successfully."
+#         except subprocess.CalledProcessError as e:
+#             message = f"Failed to stop {service_name}: {e}"
+#         logger.info(message)
+#         return message
+#
+#     service_message = None
+#     match request.args["task"]:
+#         case "training":
+#             # docker container which is running the training operation
+#             service_message = "To be added"
+#         case "load-financials":
+#             service_message = single_process(service_name="financials")
+#         case "penny":
+#             service_message = single_process(service_name="penny")
+#         case "index":
+#             service_message = single_process(service_name="index")
+#         case "generic":
+#             # service_message = single_process(service_name="generic")
+#             service_message = "To be added"
+#         case "all":
+#             service_message = ""
+#             service_message += "\n" + single_process(service_name="penny")
+#             service_message += "\n" + single_process(service_name="index")
+#             # service_message += "\n" + single_process(service_name="generic")
+#     return {"message": service_message}
 
 
 @app.get("/create-wallet")

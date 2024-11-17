@@ -28,14 +28,10 @@ from utils.financials.checks import eps_and_sales_check
 
 logger: Logger = get_logger(__name__)
 
-# args = sys.argv[1].split(":")
-# access_token = str(args[0])
-# wallet_value_params = float(args[1])
-# mode = str(args[2])
-
-access_token = "U5sOGkZTN64C0VV1mCQxaVuKyD9tiel8"
-wallet_value_params = 30000
-mode = "runner"
+args = sys.argv[1].split(":")
+access_token = str(args[0])
+wallet_value_params = float(args[1])
+mode = str(args[2])
 
 set_access_token(access_token=access_token)
 set_wallet_value(amount=wallet_value_params)
