@@ -53,12 +53,15 @@ async def eps_and_sales_check():
     financial_list: list[Financial] = await retrieve_all_services("financial",Financial)
     filters = []
     for f in financial_list:
-        if f.dates and f.eps:
-            last_record_datetime = parse_date_from_string(f.dates[-1])
-            if last_record_datetime + timedelta(days=35*3) > TODAY:
-                if f.eps[-1] > f.eps[-2] and f.eps[-1] > 0:
-                    if f.sales[-1] > 1.4*f.sales[-2] and f.eps[-2] > 0:
-                        filters.append(f.name)
+        try:
+            if f.dates and f.eps:
+                last_record_datetime = parse_date_from_string(f.dates[-1])
+                if last_record_datetime + timedelta(days=35*3) > TODAY:
+                    if f.eps[-1] > f.eps[-2] and f.eps[-1] > 0:
+                        if f.sales[-1] > 1.4*f.sales[-2] and f.eps[-2] > 0:
+                            filters.append(f.name)
+        except:
+            logger.exception(f"issue in eps for {f.name}")
     logger.info(filters)
     return filters
 

@@ -11,8 +11,9 @@ from utils.verify_symbols import get_correct_symbol
 
 logger: Logger = get_logger(__name__)
 
-args = sys.argv[1].split(":")
-access_token = str(args[0])
+# args = sys.argv[1].split(":")
+# access_token = str(args[0])
+access_token="NOGrqRNJHJE8gsq73BTorpOVvGJ5piz3"
 
 set_access_token(access_token=access_token)
 
@@ -24,8 +25,8 @@ async def load_financials():
     obtained_stock_list = await get_correct_symbol(lower_price=STOCK_LOWER_PRICE, higher_price=STOCK_UPPER_PRICE)
     obtained_stock_list = [st for st in obtained_stock_list if '-BE' not in st]
     logger.info(obtained_stock_list)
-    price_df = get_price_df(obtained_stock_list)
-    logger.info(price_df)
+    # price_df = get_price_df(obtained_stock_list)
+    # logger.info(price_df)
 
     await get_financial_df(obtained_stock_list, 7)
 

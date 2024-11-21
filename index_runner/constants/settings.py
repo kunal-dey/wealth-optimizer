@@ -1,6 +1,6 @@
 from datetime import datetime
 
-DEBUG = True
+DEBUG = False
 WALLET_VALUE = None
 
 # time settings

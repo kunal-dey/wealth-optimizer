@@ -127,10 +127,10 @@ async def start_process():
             case "load-financials":
                 service_message = single_process(service_name="load_financials", arg_list=[kite_context.access_token])
             case "penny":
-                arg_list = [kite_context.access_token, allocated_funds["penny"], "runner"] # access_token, wallet, mode(training or runner)
+                arg_list = [kite_context.access_token, str(allocated_funds["penny"]), "runner"] # access_token, wallet, mode(training or runner)
                 service_message = single_process(service_name="penny", arg_list=arg_list)
             case "index":
-                arg_list = [kite_context.access_token, allocated_funds["index"], "runner"]
+                arg_list = [kite_context.access_token, str(allocated_funds["index"]), "runner"]
                 service_message = single_process(service_name="index", arg_list=arg_list)
             case "generic":
                 # arg_list = [kite_context.access_token, allocated_funds["generic"], "runner"]
@@ -138,9 +138,9 @@ async def start_process():
                 service_message = "To be added"
             case "all":
                 service_message = ""
-                arg_list = [kite_context.access_token, allocated_funds["penny"], "runner"]
+                arg_list = [kite_context.access_token, str(allocated_funds["penny"]), "runner"]
                 service_message += "\n" + single_process(service_name="penny", arg_list=arg_list)
-                arg_list = [kite_context.access_token, allocated_funds["index"], "runner"]
+                arg_list = [kite_context.access_token, str(allocated_funds["index"]), "runner"]
                 service_message += "\n" + single_process(service_name="index", arg_list=arg_list)
                 # arg_list = [kite_context.access_token, allocated_funds["generic"], "runner"]
                 # service_message += "\n" + single_process(service_name="generic", arg_list=arg_list)

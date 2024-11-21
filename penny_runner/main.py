@@ -195,7 +195,9 @@ async def background_task():
                 log_returns = data_resampled.pct_change()
                 VaR_95 = log_returns.quantile(0.005, interpolation='lower')
 
-                stock_list = [f"{st}.NS" for st in eps_and_sales_check()]
+                eps_check_result = await eps_and_sales_check()
+
+                stock_list = [f"{st}.NS" for st in eps_check_result]
 
                 predicted_stocks = list(VaR_95[stock_list].sort_values(ascending=False).index)
 
