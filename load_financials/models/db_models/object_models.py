@@ -1,5 +1,10 @@
 from models.db_models.db_functions import jsonify
 from utils.nr_db import connect_to_collection
+from utils.logger import get_logger
+from logging import Logger
+
+
+logger: Logger = get_logger(__name__)
 
 
 def get_save_to_db(collection_name: str, model_as_self):

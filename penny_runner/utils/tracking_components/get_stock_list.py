@@ -17,5 +17,6 @@ def filter_penny_stocks():
     market_cap_df.dropna(inplace=True)
     market_cap_df['Market_Cap'] = pd.to_numeric(market_cap_df['Market_Cap'], errors='coerce').fillna(0)
     market_cap_df['Market_Cap'] = market_cap_df['Market_Cap'] / 1000
-    market_cap_df = market_cap_df[(market_cap_df["Market_Cap"] > 0.05) & (market_cap_df["Market_Cap"] < 0.9)]
+    non_penny_filter = (market_cap_df["Market_Cap"] > 0.2)
+    market_cap_df = market_cap_df[non_penny_filter]
     return market_cap_df

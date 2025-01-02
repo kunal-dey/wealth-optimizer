@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-DEBUG = os.environ.get("DEBUG", False)
+DEBUG = False
 
 YFINANCE_EXTENSION = "BO"
 CURRENT_STOCK_EXCHANGE = "BSE"

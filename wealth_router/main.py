@@ -31,7 +31,7 @@ async def get_allocated_funds():
         payload = kite_context.margins()
         return payload['equity']['available']['live_balance']
 
-    wp, wg, wi = 0.2, 0.4, 0.4
+    wp, wg, wi = 1.0, 0, 0
     available_fund = get_available_cash()
 
     holding_list: list[Holding] = await retrieve_all_services("holding", Holding)

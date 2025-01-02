@@ -7,7 +7,8 @@ WALLET_VALUE = None
 __current_time = datetime.now()
 
 TODAY = datetime(2024, 11, 14) if DEBUG else datetime.now()
-TRAINING_DATE = datetime(2024, 11, 13) if DEBUG else datetime.now()
+# TRAINING_DATE = datetime(2024, 11, 13) if DEBUG else datetime.now()
+TRAINING_DATE = datetime(2024, 12, 23)
 
 GENERATOR_URL = '127.0.0.1:8082'
 MIS_STOCK_LIST = "https://docs.google.com/spreadsheets/d/1fLTsNpFJPK349RTjs0GRSXJZD-5soCUkZt9eSMTJ2m4/export?format=csv"
@@ -51,7 +52,7 @@ MAXIMUM_ALLOCATION = 30000
 END_PROCESS = False
 
 # stock limit
-STOCK_LOWER_PRICE = 0
+STOCK_LOWER_PRICE = 20
 STOCK_UPPER_PRICE = 30000
 CURRENT_STOCK_EXCHANGE = "BSE"
 YFINANCE_EXTENSION = "BO"

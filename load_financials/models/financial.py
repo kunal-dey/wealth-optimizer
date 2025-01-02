@@ -3,6 +3,7 @@ from logging import Logger
 from typing import Callable
 
 from bson import ObjectId
+from datetime import  datetime
 
 from constants.settings import DEBUG
 from models.db_models.object_models import get_save_to_db, get_update_in_db
@@ -17,7 +18,8 @@ def get_schema():
         "name": "str",
         "eps": "list",
         "dates": "list",
-        "sales": "list"
+        "sales": "list",
+        "last_modified_date": "datetime"
     }
 
 
@@ -33,6 +35,14 @@ class Financial:
     eps: list = field(default=None)
     dates: list = field(default=None)
     sales: list = field(default=None)
+    last_modified_date: datetime = field(default=None)
+
+    def set_id(self, value):
+        self._id = value
+
+    @property
+    def get_id(self):
+        return self._id
 
     def __post_init__(self):
         self.save_to_db = get_save_to_db(self.COLLECTION, self)
@@ -43,5 +53,6 @@ class Financial:
             "name": self.name,
             "eps": self.eps,
             "sales": self.sales,
-            "dates": self.dates
+            "dates": self.dates,
+            "last_modified_date": self.last_modified_date
         }

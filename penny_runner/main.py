@@ -1,30 +1,27 @@
 import asyncio
 import os
-import pickle
 from asyncio import sleep
 from datetime import datetime
 from logging import Logger
 import sys
 import yfinance as yf
 import pandas as pd
-from kiteconnect.exceptions import InputException
 
 from constants.enums.shift import Shift
 from constants.settings import STOCK_LOWER_PRICE, STOCK_UPPER_PRICE, set_wallet_value, get_allocation, \
     YFINANCE_EXTENSION, TRAINING_DATE, DEBUG, get_wallet_value, START_TIME, SLEEP_INTERVAL, END_TIME, end_process, \
     set_end_process, STOP_BUYING_TIME_MORNING, START_BUYING_TIME_MORNING, STOP_BUYING_TIME_EVENING, \
     START_BUYING_TIME_EVENING, set_max_stocks, get_max_stocks, CURRENT_STOCK_EXCHANGE, EXPECTED_MINIMUM_MONTHLY_RETURN
-from constants.global_contexts import set_access_token, kite_context
+from constants.global_contexts import set_access_token
 from models.account import Account
 from models.db_models.db_functions import retrieve_all_services, find_by_name
 from models.stages.position import Position
 from models.stock_info import StockInfo
 from models.wallet import Wallet
-from utils.financials.checks import increasing_sales, increasing_eps
 from utils.logger import get_logger
 from utils.tracking_components.fetch_prices import fetch_current_prices
 from utils.tracking_components.verify_symbols import get_correct_symbol
-from utils.financials.checks import eps_and_sales_check
+from utils.financials.checks import eps_and_sales_check, low_pe_check, decreasing_stocks_high_eps
 
 logger: Logger = get_logger(__name__)
 
@@ -145,6 +142,8 @@ async def background_task():
 
     blacklisted_stocks = []
 
+    eps_check_result = await decreasing_stocks_high_eps()
+
     # this part will loop till the trading times end
     current_time = datetime.now()
 
@@ -195,11 +194,9 @@ async def background_task():
                 log_returns = data_resampled.pct_change()
                 VaR_95 = log_returns.quantile(0.005, interpolation='lower')
 
-                eps_check_result = await eps_and_sales_check()
+                filtered_stock_list = [f"{st}.NS" for st in eps_check_result]
 
-                stock_list = [f"{st}.NS" for st in eps_check_result]
-
-                predicted_stocks = list(VaR_95[stock_list].sort_values(ascending=False).index)
+                predicted_stocks = list(VaR_95[filtered_stock_list].sort_values(ascending=False).index)
 
                 selected_long_stocks = [st[:-3] for st in predicted_stocks]
 
@@ -416,4 +413,4 @@ if __name__ == "__main__":
     if mode == "runner":
         asyncio.run(background_task())
     else:
-        print("Wrong service to run")
+        logger.info("Wrong service to run")

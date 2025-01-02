@@ -31,10 +31,14 @@ from utils.tracking_components.verify_symbols import get_correct_symbol
 
 logger: Logger = get_logger(__name__)
 
-args = sys.argv[1].split(":")
-access_token = str(args[0])
-wallet_value_params = float(args[1])
-mode = str(args[2])
+# args = sys.argv[1].split(":")
+# access_token = str(args[0])
+# wallet_value_params = float(args[1])
+# mode = str(args[2])
+
+access_token = "rPIXT0qUsKO99YF0t7x9GwQc5xDw55A6"
+wallet_value_params = 100000
+mode = "training"
 
 set_access_token(access_token=access_token)
 set_wallet_value(amount=wallet_value_params)
